@@ -1,0 +1,11 @@
+bin/*
+.gopath~/*
+vendor/*
+__debug_bin
+server.crt
+server.key
+stuff
+.*swp
+.password
+churndr
+page-on-pod-restarts
