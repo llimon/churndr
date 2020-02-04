@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/llimon/churndr/common"
+	"github.com/llimon/churndr/util"
 )
 
 func KubeNotifierFunc(tick time.Time) {
@@ -14,7 +15,7 @@ func KubeNotifierFunc(tick time.Time) {
 	var then = now.Add(time.Duration(-LookBackTime) * time.Minute)
 	anythingToReport := false
 
-	common.Sugar.Infow("Notifier", "started at", getDateString(tick))
+	common.Sugar.Infow("Notifier", "started at", util.GetDateString(tick))
 	out := fmt.Sprintf("List of Pods with Issues in last %v minutes\n", LookBackTime)
 	for _, currPod := range common.PodCache {
 
@@ -31,7 +32,7 @@ func KubeNotifierFunc(tick time.Time) {
 				}
 				//if currContainer.Running != &b {
 				if currContainer.Running != nil {
-					out += fmt.Sprintf("\t\tRunning Started At [%v]\n", getDateString(currContainer.Running.StartedAt.Time))
+					out += fmt.Sprintf("\t\tRunning Started At [%v]\n", util.GetDateString(currContainer.Running.StartedAt.Time))
 				}
 			}
 			out += fmt.Sprintf("\n")

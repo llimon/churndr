@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/kubernetes/client-go/informers"
 
 	"github.com/llimon/churndr/common"
+	"github.com/llimon/churndr/util"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes"
@@ -36,7 +37,7 @@ func KubeGetPods() (map[string]interface{}, error) {
 	*/
 	// use the current context in kubeconfig
 	//kubeconfig := "/Users/llimon/.kube/config"
-	kubeconfig := getEnv("KUBECONFIG", "/Users/llimon/.kube/config")
+	kubeconfig := util.GetEnv("KUBECONFIG", "/Users/llimon/.kube/config")
 	currconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
 		panic(err.Error())
@@ -92,7 +93,7 @@ func podHasFilteredLabel(pod *corev1.Pod, label string, excludes []string) (stri
 	} else {
 		val, ok := pod.Labels[APP]
 		if ok {
-			if Contains(excludes, val) {
+			if util.Contains(excludes, val) {
 			} else {
 				return val, nil
 			}
@@ -145,7 +146,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					"Namespace", pod.ObjectMeta.Namespace,
 					"POD", pod.ObjectMeta.Name,
 					"Container", containerStatus.Name,
-					"Running", getDateString(containerStatus.State.Running.StartedAt.Time),
+					"Running", util.GetDateString(containerStatus.State.Running.StartedAt.Time),
 					"Restarts", containerStatus.RestartCount,
 				)
 
@@ -162,7 +163,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					"Namespace", pod.ObjectMeta.Namespace,
 					"POD", pod.ObjectMeta.Name,
 					"Container", containerStatus.Name,
-					"FinishedAt", getDateString(containerStatus.State.Terminated.FinishedAt.Time),
+					"FinishedAt", util.GetDateString(containerStatus.State.Terminated.FinishedAt.Time),
 					"ExitCode", containerStatus.State.Terminated.ExitCode,
 					"Signal", containerStatus.State.Terminated.Signal,
 					"Reason", containerStatus.State.Terminated.Reason,

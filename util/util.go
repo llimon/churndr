@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -27,14 +27,14 @@ func Contains(a []string, x string) bool {
 	return false
 }
 
-func getEnv(key, fallback string) string {
+func GetEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 	return fallback
 }
 
-func getDateString(t time.Time) string {
+func GetDateString(t time.Time) string {
 
 	return fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d-00:00",
 		t.Year(),

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/llimon/churndr/common"
+	"github.com/llimon/churndr/controller"
 	"github.com/llimon/churndr/server"
 )
 
@@ -25,7 +26,7 @@ func main() {
 
 	go server.RESTServer()
 
-	KubeGetPods()
+	controller.KubeGetPods()
 
 	// main will continue to wait untill there is an entry in quit
 	<-quit
