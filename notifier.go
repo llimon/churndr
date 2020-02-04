@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/llimon/page-on-pod-restarts/common"
+	"github.com/llimon/churndr/common"
 )
 
 func KubeNotifierFunc(tick time.Time) {

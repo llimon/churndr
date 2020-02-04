@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/llimon/page-on-pod-restarts/common"
-	"github.com/llimon/page-on-pod-restarts/server"
+	"github.com/llimon/churndr/common"
+	"github.com/llimon/churndr/server"
 )
 
 func main() {

@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/llimon/page-on-pod-restarts/common"
+	"github.com/llimon/churndr/common"
 )
 
 func RESTServer() {
