@@ -1,33 +1,23 @@
+// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
-	"time"
-
-	"github.com/llimon/churndr/common"
-	"github.com/llimon/churndr/controller"
-	"github.com/llimon/churndr/server"
+	"github.com/llimon/churndr/cmd"
 )
 
 func main() {
-
-	defer common.Logger.Sync() // flushes buffer, if any
-
-	common.Sugar.Infof("Creating notified ticker....")
-
-	ticker := time.NewTicker(10 * time.Second)
-	go func() {
-		for t := range ticker.C {
-			//Call the periodic function here.
-			KubeNotifierFunc(t)
-		}
-	}()
-
-	quit := make(chan bool, 1)
-
-	go server.RESTServer()
-
-	controller.KubeGetPods()
-
-	// main will continue to wait untill there is an entry in quit
-	<-quit
+	cmd.Execute()
 }

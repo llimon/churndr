@@ -5,14 +5,25 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/llimon/churndr/common"
 )
 
 func RESTServer() {
+
+	var bindAddress string
+
+	if common.Config.Development {
+		bindAddress = "localhost"
+	} else {
+		bindAddress = ""
+	}
+
 	http.HandleFunc("/", HelloServer)
 	http.HandleFunc("/status", StatusServer)
-	http.ListenAndServe(":8080", nil)
+
+	http.ListenAndServe(bindAddress+":"+strconv.Itoa(common.Config.Port), nil)
 }
 
 func HelloServer(w http.ResponseWriter, r *http.Request) {

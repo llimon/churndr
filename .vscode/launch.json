@@ -14,7 +14,19 @@
             "env": {
                 "KUBECONFIG": "/Users/llimon/.kube/admins@ifdp2-ppd-usw2.cluster.k8s.local"
             },
-            "args": []
+            "args": [
+                "--development",
+                "--no-email-notifications",
+                "--namespace",
+                "fdp-tools-fdp-migration-service-usw2-ppd-qal",
+                "--namespace",
+                "sandbox-sandbox-firstbank-usw2-ppd-qal",
+                "--namespace",
+                "fdp-metadata-cgds-log-processor-usw2-ppd-e2e",
+                "--namespace",
+                "fdp-metadata-cgds-log-processor-usw2-ppd-qal",
+                "start"
+            ]
         }
     ]
 }

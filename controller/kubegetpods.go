@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/kubernetes/client-go/informers"
 
@@ -85,6 +86,17 @@ func KubeGetPods() (map[string]interface{}, error) {
 	return resources, nil
 }
 
+// Return true if pod is in one of the namespaces we monitor
+func podInMonitoredNamespace(pod *corev1.Pod) bool {
+
+	for _, v := range common.Config.Namespaces {
+		if pod.ObjectMeta.Namespace == v {
+			return true
+		}
+	}
+	return false
+}
+
 func podHasFilteredLabel(pod *corev1.Pod, label string, excludes []string) (string, error) {
 	//var selector labels.Selector
 
@@ -108,57 +120,68 @@ func onAdd(obj interface{}) {
 	// Cast the obj as node
 	pod := obj.(*corev1.Pod)
 
-	label, ok := podHasFilteredLabel(pod, APP, excludeApps)
-	if ok == nil {
+	//label, ok := podHasFilteredLabel(pod, APP, excludeApps)
+	ok := podInMonitoredNamespace(pod)
+	if ok {
 		common.Sugar.Infow("onAdd",
 			"pod name", pod.ObjectMeta.Name,
-			"Label", label,
 		)
 	}
 
 	// need to fill in database on start of controller.
-
 }
 
 func onUpdate(obj interface{}, obj2 interface{}) {
-	// Cast the obj as node
+	doSavePodStatus := false
+	// Cast the obj as pod
 	pod := obj.(*corev1.Pod)
-	/*
-		    _, ok := pod.GetLabels()[]
-		    if ok {
-		        fmt.Printf("It has the label!")
+
+	ok := podInMonitoredNamespace(pod)
+	if ok {
+
+		// Only process Pod types we care about.
+		isValidKind := false
+		for _, o := range pod.OwnerReferences {
+			if o.Kind == "ReplicaSet" {
+				isValidKind = true
 			}
-	*/
+		}
+		if !isValidKind {
+			common.Sugar.Infow("Skip pod",
+				"Namespace", pod.Namespace,
+				"Name", pod.Name)
+			return
+		}
+		// Detect pods stuck in Pending for longer than N time
+		if pod.Status.Phase == "Pending" { //&& pod.Status.StartTime.Time {
 
-	/*
-		    &ContainerStateRunning{StartedAt:2020-01-29 14:24:03 -0800 PST,} nil
-			&ContainerStateTerminated{ExitCode:0,Signal:0,Reason:Completed,Message:,StartedAt:2020-01-29 14:24:03 -0800 PST,FinishedAt:2020-01-29 14:24:17 -0800 PST,ContainerID:docker://f80ee5fd323a44f0a86dc9ea4101535409faafa63298bea637f55cf835ff17a2,}
-	*/
-
-	_, ok := podHasFilteredLabel(pod, APP, []string{})
-	if ok == nil {
+		}
 		var containerList []common.ContainerDB
-
 		for _, containerStatus := range pod.Status.ContainerStatuses {
-			if containerStatus.State.Running != nil {
+			// if containerStatus.State.Running != nil {
 
-				common.Sugar.Infow("OnUpdate",
-					"Namespace", pod.ObjectMeta.Namespace,
-					"POD", pod.ObjectMeta.Name,
-					"Container", containerStatus.Name,
-					"Running", util.GetDateString(containerStatus.State.Running.StartedAt.Time),
-					"Restarts", containerStatus.RestartCount,
-				)
+			// 	common.Sugar.Infow("OnUpdate",
+			// 		"Namespace", pod.ObjectMeta.Namespace,
+			// 		"POD", pod.ObjectMeta.Name,
+			// 		"Container", containerStatus.Name,
+			// 		"Running", util.GetDateString(containerStatus.State.Running.StartedAt.Time),
+			// 		"Restarts", containerStatus.RestartCount,
+			// 	)
 
-				containerList = append(containerList, common.ContainerDB{
-					Running: &corev1.ContainerStateRunning{
-						StartedAt: containerStatus.State.Running.StartedAt,
-					},
-					Name:         containerStatus.Name,
-					RestartCount: containerStatus.RestartCount,
-				})
+			// 	containerList = append(containerList, common.ContainerDB{
+			// 		Running: &corev1.ContainerStateRunning{
+			// 			StartedAt: containerStatus.State.Running.StartedAt,
+			// 		},
+			// 		Name:         containerStatus.Name,
+			// 		RestartCount: containerStatus.RestartCount,
+			// 	})
+			// 	// BUG/FIX: We want to make sure if there is a restart that we verity StartedAt Time and see if we need to report or not
+			// 	if containerStatus.RestartCount > 0 {
+			// 		doSavePodStatus = true
+			// 	}
 
-			} else if containerStatus.State.Terminated != nil {
+			//} else if containerStatus.State.Terminated != nil {
+			if containerStatus.State.Terminated != nil {
 				common.Sugar.Infow("OnUpdate",
 					"Namespace", pod.ObjectMeta.Namespace,
 					"POD", pod.ObjectMeta.Name,
@@ -179,11 +202,15 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					Name:         containerStatus.Name,
 					RestartCount: containerStatus.RestartCount,
 				})
+				doSavePodStatus = true
 
-				if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
-					fmt.Println("Marking pod deletion on our pod database cache")
-				}
-			} else if containerStatus.State.Waiting != nil {
+				// if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
+				// 	fmt.Println("Marking pod deletion on our pod database cache")
+				// }
+				//} else if containerStatus.State.Waiting != nil {
+			} else {
+				// BUG/FIX: We don't do anything for Waiting. There might be some oportunity to catch issues with pods on waiting stage.
+				//          Need to review.
 				common.Sugar.Infow("OnUpdate",
 					"Namespace", pod.ObjectMeta.Namespace,
 					"POD", pod.ObjectMeta.Name,
@@ -193,16 +220,16 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 			//newPod.container = containerList
 			//fmt.Println(containerStatus.Name, containerStatus.RestartCount, containerStatus.State.Running, containerStatus.State.Terminated)
 		}
-		// Persist lastTimeReported
-		ltr := common.PodCache[pod.ObjectMeta.Name].LastTimeReported
-		common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
-			Name:             pod.ObjectMeta.Name,
-			Namespace:        pod.ObjectMeta.Namespace,
-			Container:        containerList,
-			LastTimeReported: ltr,
+		if doSavePodStatus {
+			// Persist lastTimeReported
+			ltr := common.PodCache[pod.ObjectMeta.Name].LastTimeReported
+			common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
+				Name:             pod.ObjectMeta.Name,
+				Namespace:        pod.ObjectMeta.Namespace,
+				Container:        containerList,
+				LastTimeReported: ltr,
+			}
 		}
-		fmt.Println(containerList)
-
 	}
 
 }
@@ -210,16 +237,20 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 func onDelete(obj interface{}) {
 	//fmt.Println("onDelete")
 	// Cast the obj as node
-	pod := obj.(*corev1.Pod)
-	label, ok := podHasFilteredLabel(pod, APP, excludeApps)
-	if ok == nil {
-		fmt.Printf("onDelete-POD %v has label %v=%v", pod.ObjectMeta.Name, APP, label)
-		if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
-			fmt.Println("Marking pod deletion on our pod database cache")
-			// BUG/FIX: Some how mark it as deleted
-			common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
-				Name:      pod.ObjectMeta.Name,
-				Namespace: pod.ObjectMeta.Namespace,
+	objReflect := reflect.ValueOf(obj)
+	// BUG/FIX: somehow obj == cache.DeletedFinalStateUnknown  happens. Should we monitor for this condition?
+	if objReflect.Type().String() == "pod" {
+		pod := obj.(*corev1.Pod)
+		ok := podInMonitoredNamespace(pod)
+		if ok {
+			fmt.Printf("onDelete-POD %v has label %v", pod.ObjectMeta.Name, APP)
+			if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
+				fmt.Println("Marking pod deletion on our pod database cache")
+				// BUG/FIX: Some how mark it as deleted
+				common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
+					Name:      pod.ObjectMeta.Name,
+					Namespace: pod.ObjectMeta.Namespace,
+				}
 			}
 		}
 	}
