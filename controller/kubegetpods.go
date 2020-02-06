@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/kubernetes/client-go/informers"
+	//"github.com/kubernetes/client-go/informers"
+	"k8s.io/client-go/informers"
 
 	"github.com/llimon/churndr/common"
 	"github.com/llimon/churndr/util"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"k8s.io/client-go/tools/cache"
@@ -27,21 +29,23 @@ var excludeApps = []string{"kiamon", "kiam", "moot"}
 /*KubeGetPods get details for  kubernetes resources names matching
 the filter*/
 func KubeGetPods() (map[string]interface{}, error) {
+	var currconfig *rest.Config
+	var err error
 	resources := map[string]interface{}{}
+
 	// creates the in-cluster config
-	/*
-		currconfig, err := rest.InClusterConfig()
+	if common.Config.InClusterConfiguration {
+		currconfig, err = rest.InClusterConfig()
 		if err != nil {
-			fmt.Println(err.Error())
-			return resources, err
+			panic(err.Error())
 		}
-	*/
-	// use the current context in kubeconfig
-	//kubeconfig := "/Users/llimon/.kube/config"
-	kubeconfig := util.GetEnv("KUBECONFIG", "/Users/llimon/.kube/config")
-	currconfig, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if err != nil {
-		panic(err.Error())
+	} else {
+		kubeconfig := util.GetEnv("KUBECONFIG", "/Users/llimon/.kube/config")
+		currconfig, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+		if err != nil {
+			panic(err.Error())
+		}
+
 	}
 
 	clientset, err := kubernetes.NewForConfig(currconfig)
@@ -223,12 +227,15 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 		if doSavePodStatus {
 			// Persist lastTimeReported
 			ltr := common.PodCache[pod.ObjectMeta.Name].LastTimeReported
-			common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
+			p := common.PodDB{
 				Name:             pod.ObjectMeta.Name,
 				Namespace:        pod.ObjectMeta.Namespace,
 				Container:        containerList,
 				LastTimeReported: ltr,
 			}
+			p.SetLink("self", "/pod/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name, "")
+			common.PodCache[pod.ObjectMeta.Name] = p
+
 		}
 	}
 
@@ -239,6 +246,7 @@ func onDelete(obj interface{}) {
 	// Cast the obj as node
 	objReflect := reflect.ValueOf(obj)
 	// BUG/FIX: somehow obj == cache.DeletedFinalStateUnknown  happens. Should we monitor for this condition?
+	fmt.Println(">>>>>>> objReflect.Type().String()", objReflect.Type().String())
 	if objReflect.Type().String() == "pod" {
 		pod := obj.(*corev1.Pod)
 		ok := podInMonitoredNamespace(pod)

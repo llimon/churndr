@@ -45,6 +45,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&common.Config.Development, "development", false, "Enable development mode")
 	rootCmd.PersistentFlags().BoolVar(&common.Config.NoAPIServer, "no-api-server", false, "Disable Rest API server")
 	rootCmd.PersistentFlags().BoolVar(&common.Config.DissableEmailNotifications, "no-email-notifications", false, "Disable Email notifications")
+	rootCmd.PersistentFlags().BoolVar(&common.Config.InClusterConfiguration, "in-cluster-configuration", false, "Disable Email notifications")
 	rootCmd.PersistentFlags().StringSliceVarP(&common.Config.Namespaces, "namespace", "n", []string{}, "")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSMTPServer, "smtp", "m", "", "SMTP Server used for deliverying email over TLS")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailFrom, "email-from", "f", "", "Email originator for notifications")
@@ -55,12 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", 15, "How how long to suppres duplicated notifications in minutes")
 	rootCmd.PersistentFlags().IntVar(&common.Config.NotificationFrequency, "notification-frequency", 60, "Frequency to run notification engine in seconds")
 	rootCmd.MarkPersistentFlagRequired("namespace")
-	//rootCmd.MarkPersistentFlagRequired("noise-look-back-time")
 
-	// Email parameters GO Here
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 

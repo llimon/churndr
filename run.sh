@@ -1,4 +1,4 @@
-./churndr --notification-frequency 60 \
+./churndr --notification-frequency 120 \
           --noise-look-back-time 15 \
           --email-from "luislimon@gmail.com" \
           --email-to "luislimon@gmail.com" \

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/RichardKnop/jsonhal"
 	"github.com/llimon/churndr/common"
 )
 
@@ -32,13 +33,29 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 
 func StatusServer(w http.ResponseWriter, r *http.Request) {
 
+	/*
+	   v1Users := common.V1_Users{Name: "users"}
+	   v1Users.SetLink("self", "/users", "")
+	   for _, v := range u.UserDB {
+	       v.SetLink("self", "/users/"+v.UserID, "")
+	       userList = append(userList, v)
+	   }
+	   v1Users.SetEmbedded("users", jsonhal.Embedded(userList))
+	   //return userList, nil
+	   return v1Users, nil
+
+	*/
+
 	// Convert PodCache map into a array for external consumtion.
+	statusPods := common.Status{Name: "status"}
+	statusPods.SetLink("self", "/status", "")
 	var out = []common.PodDB{}
 
 	for _, currPod := range common.PodCache {
 		out = append(out, currPod)
 	}
-	json, err := json.MarshalIndent(out, "", " ")
+	statusPods.SetEmbedded("pods", jsonhal.Embedded(out))
+	json, err := json.MarshalIndent(statusPods, "", " ")
 	if err != nil {
 		common.Sugar.Infof("Failed to Marshal PodCache, Now what?")
 	} else {

@@ -9,6 +9,7 @@ import (
 
 // Configuration is the configuration needed to run API server
 type Configuration struct {
+	InClusterConfiguration        bool
 	Port                          int
 	Development                   bool
 	MonitorCurrentNamespace       bool
@@ -31,6 +32,11 @@ type ContainerDB struct {
 	Waiting      *corev1.ContainerStateWaiting    `json:"waiting,omitempty"`
 	Terminated   *corev1.ContainerStateTerminated `json:"terminated,omitempty"`
 	RestartCount int32
+}
+
+type Status struct {
+	jsonhal.Hal
+	Name string `json:"Name"`
 }
 
 type PodDB struct {
