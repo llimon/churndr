@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/llimon/churndr/common"
@@ -30,11 +32,24 @@ var startCmd = &cobra.Command{
 	Short: "Start rest service",
 	Long:  `Stuff Super Service`,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		defer common.Logger.Sync() // flushes buffer, if any
+
+		if !common.Config.DissableEmailNotifications {
+			if common.Config.EmailSMTPServer == "" ||
+				common.Config.EmailFrom == "" ||
+				common.Config.EmailTo == "" { //||
+				//common.Config.EmailLogin == "" ||
+				//common.Config.EmailPassword == "" {
+				//fmt.Println("Missing parameter(s) one of [email-from, email-to, email-login, email-password, smtp]")
+				fmt.Println("Missing parameter(s) one of [email-from, email-to, smtp]")
+				os.Exit(1)
+			}
+		}
 
 		common.Sugar.Infof("Creating notified ticker....")
 
-		ticker := time.NewTicker(10 * time.Second)
+		ticker := time.NewTicker(time.Duration(common.Config.NotificationFrequency) * time.Second)
 		go func() {
 			for t := range ticker.C {
 				//Call the periodic function here.

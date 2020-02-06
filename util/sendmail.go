@@ -17,7 +17,7 @@ import (
 func SendTLSMail(e common.Email) {
 
 	// Connect to the SMTP Server
-	servername := "smtp.gmail.com:465"
+	servername := common.Config.EmailSMTPServer + ":" + "465"
 
 	content, err := ioutil.ReadFile(".password")
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 func KubeNotifierFunc(tick time.Time) {
 
 	var now = time.Now()
-	LookBackTime := 15
+	LookBackTime := common.Config.NoiseReductionLookBackMinutes
 	var then = now.Add(time.Duration(-LookBackTime) * time.Minute)
 	anythingToReport := false
 
@@ -66,9 +66,9 @@ func KubeNotifierFunc(tick time.Time) {
 	if anythingToReport {
 		// Bombs away
 		email := common.Email{
-			From:    "luislimon@gmail.com",
-			To:      "luislimon@gmail.com",
-			Subject: fmt.Sprintf("ChurnDr: Pods with errors and not yet reported since %v minutes\n", LookBackTime),
+			From:    common.Config.EmailFrom,
+			To:      common.Config.EmailTo,
+			Subject: common.Config.EmailSubject,
 			Body:    out,
 		}
 		fmt.Println(email)

@@ -14,12 +14,15 @@ type Configuration struct {
 	MonitorCurrentNamespace       bool
 	Namespaces                    []string // List of namespaces to monitor if MonitorCurrentNamespace==false
 	DissableEmailNotifications    bool
-	NoiseReductionLookBackMinutes int32
+	NoiseReductionLookBackMinutes int
+	NotificationFrequency         int
 	NoAPIServer                   bool
 	EmailSMTPServer               string
 	EmailFrom                     string
 	EmailTo                       string
-	EmailSecret                   string
+	EmailSubject                  string
+	EmailLogin                    string
+	EmailPassword                 string
 }
 
 type ContainerDB struct {

@@ -21,6 +21,7 @@ var rootCmd = &cobra.Command{
     Provides "noise reduction" functionability
 `,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+
 		return CheckRequiredFlags(cmd.Flags())
 	},
 }
@@ -45,6 +46,16 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&common.Config.NoAPIServer, "no-api-server", false, "Disable Rest API server")
 	rootCmd.PersistentFlags().BoolVar(&common.Config.DissableEmailNotifications, "no-email-notifications", false, "Disable Email notifications")
 	rootCmd.PersistentFlags().StringSliceVarP(&common.Config.Namespaces, "namespace", "n", []string{}, "")
+	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSMTPServer, "smtp", "m", "", "SMTP Server used for deliverying email over TLS")
+	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailFrom, "email-from", "f", "", "Email originator for notifications")
+	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailTo, "email-to", "t", "", "Email recipient for notifications")
+	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSubject, "email-subject", "s", "", "Email subject of notification")
+	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailLogin, "email-login", "l", "", "Email login used for authentication")
+	rootCmd.PersistentFlags().StringVar(&common.Config.EmailPassword, "email-password", "", "Email password used for authentication")
+	rootCmd.PersistentFlags().IntVar(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", 15, "How how long to suppres duplicated notifications in minutes")
+	rootCmd.PersistentFlags().IntVar(&common.Config.NotificationFrequency, "notification-frequency", 60, "Frecuency to run notification engine in seconds")
+	rootCmd.MarkPersistentFlagRequired("namespace")
+	//rootCmd.MarkPersistentFlagRequired("noise-look-back-time")
 
 	// Email parameters GO Here
 

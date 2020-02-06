@@ -16,6 +16,8 @@
             },
             "args": [
                 "--development",
+                "--notification-frequency",
+                60
                 "--no-email-notifications",
                 "--namespace",
                 "fdp-tools-fdp-migration-service-usw2-ppd-qal",
@@ -25,6 +27,14 @@
                 "fdp-metadata-cgds-log-processor-usw2-ppd-e2e",
                 "--namespace",
                 "fdp-metadata-cgds-log-processor-usw2-ppd-qal",
+                "--email-from",
+                "luislimon@gmail.com",
+                "--email-to",
+                "luislimon@gmail.com",
+                "--email-subject",
+                "ChurnDr: Pods with issues in monitored namespaces",
+                "--smtp",
+                "smtp.gmail.com",
                 "start"
             ]
         }
