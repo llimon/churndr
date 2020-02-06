@@ -243,22 +243,24 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 
 func onDelete(obj interface{}) {
 	//fmt.Println("onDelete")
-	// Cast the obj as node
 	objReflect := reflect.ValueOf(obj)
 	// BUG/FIX: somehow obj == cache.DeletedFinalStateUnknown  happens. Should we monitor for this condition?
+
+	// BUG/FIX: How do I detect pods terminated because of eviction?
 	fmt.Println(">>>>>>> objReflect.Type().String()", objReflect.Type().String())
-	if objReflect.Type().String() == "pod" {
+	if objReflect.Type().String() == "*v1.Pod" {
+		// cast object as pod
 		pod := obj.(*corev1.Pod)
 		ok := podInMonitoredNamespace(pod)
 		if ok {
 			fmt.Printf("onDelete-POD %v has label %v", pod.ObjectMeta.Name, APP)
 			if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
 				fmt.Println("Marking pod deletion on our pod database cache")
-				// BUG/FIX: Some how mark it as deleted
-				common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
-					Name:      pod.ObjectMeta.Name,
-					Namespace: pod.ObjectMeta.Namespace,
-				}
+				//BUG/FIX; this is incomplete, for now don't monitor for it.
+				// common.PodCache[pod.ObjectMeta.Name] = common.PodDB{
+				// 	Name:      pod.ObjectMeta.Name,
+				// 	Namespace: pod.ObjectMeta.Namespace,
+				// }
 			}
 		}
 	}

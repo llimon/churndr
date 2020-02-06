@@ -16,7 +16,7 @@ func KubeNotifierFunc(tick time.Time) {
 	anythingToReport := false
 
 	common.Sugar.Infow("Notifier", "started at", util.GetDateString(tick))
-	out := fmt.Sprintf("List of Pods with Issues in last %v minutes\n", LookBackTime)
+	out := fmt.Sprintf("List of Pods with Issues in last %v minutes\n", common.Config.NotificationFrequency)
 
 	for _, currNamespaceToReport := range common.Config.Namespaces {
 		hasPodsToReportInNamespace := func() bool {

@@ -45,7 +45,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&common.Config.Development, "development", false, "Enable development mode")
 	rootCmd.PersistentFlags().BoolVar(&common.Config.NoAPIServer, "no-api-server", false, "Disable Rest API server")
 	rootCmd.PersistentFlags().BoolVar(&common.Config.DissableEmailNotifications, "no-email-notifications", false, "Disable Email notifications")
-	rootCmd.PersistentFlags().BoolVar(&common.Config.InClusterConfiguration, "in-cluster-configuration", false, "Disable Email notifications")
+	rootCmd.PersistentFlags().BoolVar(&common.Config.InClusterConfiguration, "in-cluster-configuration", false, "Uses internal kubernetes API endpoint, $KUBECONFIG if undefined")
 	rootCmd.PersistentFlags().StringSliceVarP(&common.Config.Namespaces, "namespace", "n", []string{}, "")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSMTPServer, "smtp", "m", "", "SMTP Server used for deliverying email over TLS")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailFrom, "email-from", "f", "", "Email originator for notifications")
