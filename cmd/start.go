@@ -65,7 +65,7 @@ var startCmd = &cobra.Command{
 
 		controller.KubeGetPods()
 
-		// main will continue to wait untill there is an entry in quit
+		// main will continue to wait until there is an entry in quit
 		<-quit
 	},
 }

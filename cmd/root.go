@@ -17,7 +17,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "churndr",
 	Short: "Monitors POD churn over a number of namespaces",
-	Long: `Monitors and alerts when PODs are misbeheavings on specified namespaces. Generates alerts and deailed reports
+	Long: `Monitors and alerts when PODs are misbehaving on specified namespaces. Generates alerts and detailed reports
     Provides "noise reduction" functionability
 `,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -53,7 +53,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailLogin, "email-login", "l", "", "Email login used for authentication")
 	rootCmd.PersistentFlags().StringVar(&common.Config.EmailPassword, "email-password", "", "Email password used for authentication")
 	rootCmd.PersistentFlags().IntVar(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", 15, "How how long to suppres duplicated notifications in minutes")
-	rootCmd.PersistentFlags().IntVar(&common.Config.NotificationFrequency, "notification-frequency", 60, "Frecuency to run notification engine in seconds")
+	rootCmd.PersistentFlags().IntVar(&common.Config.NotificationFrequency, "notification-frequency", 60, "Frequency to run notification engine in seconds")
 	rootCmd.MarkPersistentFlagRequired("namespace")
 	//rootCmd.MarkPersistentFlagRequired("noise-look-back-time")
 

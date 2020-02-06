@@ -209,7 +209,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 				// }
 				//} else if containerStatus.State.Waiting != nil {
 			} else {
-				// BUG/FIX: We don't do anything for Waiting. There might be some oportunity to catch issues with pods on waiting stage.
+				// BUG/FIX: We don't do anything for Waiting. There might be some opportunity to catch issues with pods on waiting stage.
 				//          Need to review.
 				common.Sugar.Infow("OnUpdate",
 					"Namespace", pod.ObjectMeta.Namespace,
