@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 
 	//"github.com/kubernetes/client-go/informers"
@@ -40,7 +41,12 @@ func KubeGetPods() (map[string]interface{}, error) {
 			panic(err.Error())
 		}
 	} else {
-		kubeconfig := util.GetEnv("KUBECONFIG", "/Users/llimon/.kube/config")
+		home, err := os.UserHomeDir()
+		if err != nil {
+			common.Sugar.Infof("Could not determine user home dir, setting it to /tmp")
+			home = "/tmp"
+		}
+		kubeconfig := util.GetEnv("KUBECONFIG", home+"/.kube/config")
 		currconfig, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
 			panic(err.Error())
@@ -196,7 +202,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					"Reason", containerStatus.State.Terminated.Reason,
 					"Restarts", containerStatus.RestartCount,
 				)
-				containerList = append(containerList, common.ContainerDB{
+				c := common.ContainerDB{
 					Terminated: &corev1.ContainerStateTerminated{
 						FinishedAt: containerStatus.State.Terminated.FinishedAt,
 						ExitCode:   containerStatus.State.Terminated.ExitCode,
@@ -205,8 +211,16 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					},
 					Name:         containerStatus.Name,
 					RestartCount: containerStatus.RestartCount,
-				})
+					Logs:         "/pod/log/container/" + pod.ObjectMeta.Namespace + "/" + pod.ObjectMeta.Name + "/" + containerStatus.Name + "/" + fmt.Sprint(containerStatus.RestartCount),
+				}
+				c.SetLink("logs", "/pod/log/container/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name+"/"+containerStatus.Name+"/"+fmt.Sprint(containerStatus.RestartCount), "")
+				containerList = append(containerList, c)
 				doSavePodStatus = true
+
+				// Save logs of terminated pod for posterity
+				if containerStatus.RestartCount > 0 {
+					go util.PersistPodLogs(pod, containerStatus.Name, containerStatus.RestartCount)
+				}
 
 				// if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
 				// 	fmt.Println("Marking pod deletion on our pod database cache")

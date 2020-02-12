@@ -27,11 +27,14 @@ type Configuration struct {
 }
 
 type ContainerDB struct {
-	Name         string                           `json:"name"`
-	Running      *corev1.ContainerStateRunning    `json:"running,omitempty"`
-	Waiting      *corev1.ContainerStateWaiting    `json:"waiting,omitempty"`
-	Terminated   *corev1.ContainerStateTerminated `json:"terminated,omitempty"`
-	RestartCount int32
+	jsonhal.Hal
+	Name           string                           `json:"name"`
+	Running        *corev1.ContainerStateRunning    `json:"running,omitempty"`
+	Waiting        *corev1.ContainerStateWaiting    `json:"waiting,omitempty"`
+	Terminated     *corev1.ContainerStateTerminated `json:"terminated,omitempty"`
+	Logs           string                           `json:"logs,omitempty"`
+	RestartCount   int32
+	TerminationLog string
 }
 
 type Status struct {
@@ -46,6 +49,16 @@ type PodDB struct {
 	LastTimeReported time.Time     `json:"lasttimereported,omitempty"`
 	Reported         bool          `json:"reported,omitempty"`
 	Container        []ContainerDB `json:"container,omitempty"`
+	RecoveredAt      time.Time     `json:"recoveredat,omitempty"`
+	IsHealthy        bool          `json:"ishealthy"`
+}
+
+type PodLogsDB struct {
+	jsonhal.Hal
+	Name         string `json:"name"`
+	Namespace    string `json:"namespace"`
+	RestartCount int32  `json:"restartcount"`
+	Log          string `json:"log"`
 }
 
 type Email struct {

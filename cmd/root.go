@@ -42,10 +42,10 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.churndr.yaml)")
-	rootCmd.PersistentFlags().BoolVar(&common.Config.Development, "development", false, "Enable development mode")
-	rootCmd.PersistentFlags().BoolVar(&common.Config.NoAPIServer, "no-api-server", false, "Disable Rest API server")
-	rootCmd.PersistentFlags().BoolVar(&common.Config.DissableEmailNotifications, "no-email-notifications", false, "Disable Email notifications")
-	rootCmd.PersistentFlags().BoolVar(&common.Config.InClusterConfiguration, "in-cluster-configuration", false, "Uses internal kubernetes API endpoint, $KUBECONFIG if undefined")
+	rootCmd.PersistentFlags().BoolVarP(&common.Config.Development, "development", "D", false, "Enable development mode")
+	rootCmd.PersistentFlags().BoolVarP(&common.Config.NoAPIServer, "no-api-server", "A", false, "Disable Rest API server")
+	rootCmd.PersistentFlags().BoolVarP(&common.Config.DissableEmailNotifications, "no-email-notifications", "N", false, "Disable Email notifications")
+	rootCmd.PersistentFlags().BoolVarP(&common.Config.InClusterConfiguration, "in-cluster-configuration", "C", false, "Uses internal kubernetes API endpoint, $KUBECONFIG if undefined")
 	rootCmd.PersistentFlags().StringSliceVarP(&common.Config.Namespaces, "namespace", "n", []string{}, "")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSMTPServer, "smtp", "m", "", "SMTP Server used for deliverying email over TLS")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailFrom, "email-from", "f", "", "Email originator for notifications")
@@ -53,8 +53,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailSubject, "email-subject", "s", "", "Email subject of notification")
 	rootCmd.PersistentFlags().StringVarP(&common.Config.EmailLogin, "email-login", "l", "", "Email login used for authentication")
 	rootCmd.PersistentFlags().StringVar(&common.Config.EmailPassword, "email-password", "", "Email password used for authentication")
-	rootCmd.PersistentFlags().IntVar(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", 15, "How how long to suppres duplicated notifications in minutes")
-	rootCmd.PersistentFlags().IntVar(&common.Config.NotificationFrequency, "notification-frequency", 60, "Frequency to run notification engine in seconds")
+	rootCmd.PersistentFlags().IntVarP(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", "R", 15, "How how long to suppres duplicated notifications in minutes")
+	rootCmd.PersistentFlags().IntVarP(&common.Config.NotificationFrequency, "notification-frequency", "F", 60, "Frequency to run notification engine in seconds")
 	rootCmd.MarkPersistentFlagRequired("namespace")
 
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

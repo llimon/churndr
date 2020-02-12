@@ -3,6 +3,7 @@ package util
 import (
 	"bytes"
 	"io"
+	"os"
 
 	"github.com/llimon/churndr/common"
 	"github.com/llimon/churndr/common/util"
@@ -13,10 +14,18 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func getPodLogs(pod corev1.Pod) (string, error) {
+func GetPreviousPodLogs(pod *corev1.Pod, containerName string, tailLines int64, limitBytes int64) (string, error) {
 	var config *rest.Config
 	var err error
-	podLogOpts := corev1.PodLogOptions{}
+
+	//tailLines := int64(200)
+	//limitBytes := int64(4096)
+	podLogOpts := corev1.PodLogOptions{
+		Previous:   true,
+		Container:  containerName,
+		TailLines:  &tailLines,
+		LimitBytes: &limitBytes,
+	}
 	if common.Config.InClusterConfiguration {
 		config, err = rest.InClusterConfig()
 		if err != nil {
@@ -24,7 +33,12 @@ func getPodLogs(pod corev1.Pod) (string, error) {
 
 		}
 	} else {
-		kubeconfig := util.GetEnv("KUBECONFIG", "/Users/llimon/.kube/config")
+		home, err := os.UserHomeDir()
+		if err != nil {
+			common.Sugar.Infof("Could not determine user home dir, setting it to /tmp")
+			home = "/tmp"
+		}
+		kubeconfig := util.GetEnv("KUBECONFIG", home+"/.kube/config")
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
 			return "", err

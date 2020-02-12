@@ -16,6 +16,8 @@
             },
             "args": [
                 "--development",
+                "--port",
+                8081,
                 "--notification-frequency",
                 60
                 "--no-email-notifications",
