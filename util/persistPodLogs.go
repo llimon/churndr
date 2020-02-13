@@ -24,6 +24,21 @@ func PersistPodLogs(pod *corev1.Pod, containerName string, restartCount int32) {
 		}
 		p.SetLink("self", "/pod/log/"+string(restartCount)+"/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name+"/"+fmt.Sprint(restartCount), "")
 		common.PodLogs[pod.ObjectMeta.Name+"/"+containerName+"/"+fmt.Sprint(restartCount)] = p
+
+		// Persist History of executions.
+		pHistory := common.PodLogHistory[pod.ObjectMeta.Name+"/"+containerName]
+
+		pHistory = append(pHistory, common.PodLogHistoryDB{
+			Name:         pod.ObjectMeta.Name,
+			Namespace:    pod.ObjectMeta.Namespace,
+			RestartCount: restartCount,
+		})
+		if len(pHistory) > 3 {
+			common.Sugar.Infof("Deleting old Pod run history")
+			pHistory = pHistory[1:]
+		}
+		common.PodLogHistory[pod.ObjectMeta.Name+"/"+containerName] = pHistory
+
 		common.Sugar.Infow("Got Logs for container",
 			"pod", pod.Name,
 			"container", containerName,
@@ -31,5 +46,6 @@ func PersistPodLogs(pod *corev1.Pod, containerName string, restartCount int32) {
 			"container", containerName,
 			"restartCount", restartCount,
 			"log", log)
+
 	}
 }

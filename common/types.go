@@ -61,6 +61,15 @@ type PodLogsDB struct {
 	Log          string `json:"log"`
 }
 
+type PodLogHistoryDB struct {
+	Name         string    `json:"name"`
+	Namespace    string    `json:"namespace"`
+	RestartCount int32     `json:"restartCount"`
+	Reason       string    `json:"reason"`
+	ExitCode     int32     `json:"exitcCode"`
+	terminatedAt time.Time `json:"terminatedAt"`
+}
+
 type Email struct {
 	From    string
 	To      string

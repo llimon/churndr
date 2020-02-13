@@ -10,6 +10,7 @@ var Sugar = Logger.Sugar()
 var PodCache = make(map[string]PodDB)
 
 var PodLogs = make(map[string]PodLogsDB)
+var PodLogHistory = make(map[string][]PodLogHistoryDB)
 
 // Config - Holds application configuation Passed down by cobra
 var Config Configuration
