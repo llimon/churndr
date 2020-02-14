@@ -70,7 +70,8 @@ type PodLogHistoryDB struct {
 	Log          string    `json:"log`
 	Reason       string    `json:"reason"`
 	ExitCode     int32     `json:"exitCode"`
-	terminatedAt time.Time `json:"terminatedAt"`
+	FinishedAt   time.Time `json:"finishedAt"`
+	Signal       int32     `json:"signal"`
 }
 
 type JhalResponse struct {

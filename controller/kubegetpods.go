@@ -218,7 +218,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 
 				// Save logs of terminated pod for posterity
 				if containerStatus.RestartCount > 0 {
-					go util.PersistPodLogs(pod, containerStatus.Name, containerStatus.RestartCount)
+					go util.PersistPodLogs(pod, containerStatus)
 				}
 
 				// if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
