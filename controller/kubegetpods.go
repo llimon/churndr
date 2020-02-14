@@ -211,9 +211,8 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 					},
 					Name:         containerStatus.Name,
 					RestartCount: containerStatus.RestartCount,
-					Logs:         "/pod/log/container/" + pod.ObjectMeta.Namespace + "/" + pod.ObjectMeta.Name + "/" + containerStatus.Name + "/" + fmt.Sprint(containerStatus.RestartCount),
 				}
-				c.SetLink("logs", "/pod/log/container/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name+"/"+containerStatus.Name+"/"+fmt.Sprint(containerStatus.RestartCount), "")
+				c.SetLink("log", "/pod/log/container/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name+"/"+containerStatus.Name+"/"+fmt.Sprint(containerStatus.RestartCount), "")
 				containerList = append(containerList, c)
 				doSavePodStatus = true
 
@@ -248,6 +247,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 				LastTimeReported: ltr,
 			}
 			p.SetLink("self", "/pod/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name, "")
+			p.SetLink("logHistory", "/pod/history/"+pod.ObjectMeta.Namespace+"/"+pod.ObjectMeta.Name, "")
 			common.PodCache[pod.ObjectMeta.Name] = p
 
 		}

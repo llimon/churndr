@@ -55,6 +55,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&common.Config.EmailPassword, "email-password", "", "Email password used for authentication")
 	rootCmd.PersistentFlags().IntVarP(&common.Config.NoiseReductionLookBackMinutes, "noise-look-back-time", "R", 15, "How how long to suppres duplicated notifications in minutes")
 	rootCmd.PersistentFlags().IntVarP(&common.Config.NotificationFrequency, "notification-frequency", "F", 60, "Frequency to run notification engine in seconds")
+	rootCmd.PersistentFlags().IntVarP(&common.Config.MaxPodHistory, "max-pod-history", "", 15, "Max number of pod restarts to keep in history.")
 	rootCmd.MarkPersistentFlagRequired("namespace")
 
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

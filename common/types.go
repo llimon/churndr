@@ -13,6 +13,7 @@ type Configuration struct {
 	Port                          int
 	Development                   bool
 	MonitorCurrentNamespace       bool
+	MaxPodHistory                 int
 	Namespaces                    []string // List of namespaces to monitor if MonitorCurrentNamespace==false
 	DissableEmailNotifications    bool
 	NoiseReductionLookBackMinutes int
@@ -32,7 +33,6 @@ type ContainerDB struct {
 	Running        *corev1.ContainerStateRunning    `json:"running,omitempty"`
 	Waiting        *corev1.ContainerStateWaiting    `json:"waiting,omitempty"`
 	Terminated     *corev1.ContainerStateTerminated `json:"terminated,omitempty"`
-	Logs           string                           `json:"logs,omitempty"`
 	RestartCount   int32
 	TerminationLog string
 }
@@ -62,12 +62,20 @@ type PodLogsDB struct {
 }
 
 type PodLogHistoryDB struct {
+	jsonhal.Hal
 	Name         string    `json:"name"`
 	Namespace    string    `json:"namespace"`
+	Container    string    `json:"container"`
 	RestartCount int32     `json:"restartCount"`
+	Log          string    `json:"log`
 	Reason       string    `json:"reason"`
-	ExitCode     int32     `json:"exitcCode"`
+	ExitCode     int32     `json:"exitCode"`
 	terminatedAt time.Time `json:"terminatedAt"`
+}
+
+type JhalResponse struct {
+	jsonhal.Hal
+	Name string `json:"Name"`
 }
 
 type Email struct {

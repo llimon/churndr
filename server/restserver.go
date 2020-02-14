@@ -16,7 +16,7 @@ func SetRoutes(router *mux.Router) {
 	router.HandleFunc("/", HelloServer)
 	router.HandleFunc("/users", StatusServer)
 	router.HandleFunc("/pod/log/container/{namespace}/{pod}/{container}/{restart}", GetPodContainerLogs)
-
+	router.HandleFunc("/pod/history/{namespace}/{pod}", GetPodContainerHistory)
 }
 
 func RESTServer() {
@@ -37,6 +37,47 @@ func RESTServer() {
 
 func HelloServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Go Away!, %s!", r.URL.Path[1:])
+}
+
+func GetPodContainerHistory(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	namespace, okNamespace := vars["namespace"]
+	pod, okPod := vars["pod"]
+
+	jhalResponse := common.JhalResponse{Name: "podHistory"}
+	jhalResponse.SetLink("self", "/pod/history/"+namespace+"/"+pod, "")
+
+	if !okNamespace || !okPod {
+		common.Sugar.Infow("Missing parameter to GetPodContainerLogs",
+			"pod", pod,
+			"namespace", namespace)
+		//http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.NotFound(w, r)
+
+		// RETURN HTTP ERROR
+	} else {
+		common.Sugar.Infow("Debug",
+			"pod", pod,
+			"namespace", namespace)
+
+		logHistory, ok := common.PodLogHistory[namespace+"/"+pod]
+		jhalResponse.SetEmbedded("history", jsonhal.Embedded(logHistory))
+
+		if !ok {
+			http.NotFound(w, r)
+		} else {
+			json, err := json.MarshalIndent(jhalResponse, "", " ")
+			if err != nil {
+				common.Sugar.Infof("Failed to Marshal log, Now what?")
+			}
+			w.Header().Set("Content-Type", "text/json; charset=utf-8") // normal header
+			w.WriteHeader(http.StatusOK)
+
+			io.WriteString(w, string(json))
+		}
+
+	}
+
 }
 
 func GetPodContainerLogs(w http.ResponseWriter, r *http.Request) {
