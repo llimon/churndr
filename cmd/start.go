@@ -63,6 +63,8 @@ var startCmd = &cobra.Command{
 			go server.RESTServer()
 		}
 
+		go controller.RunChurnNotifierController()
+
 		controller.KubeGetPods()
 
 		// main will continue to wait until there is an entry in quit

@@ -1,0 +1,5 @@
+E0218 15:23:12.155492    8381 reflector.go:153] github.com/llimon/churndr/pkg/generated/informers/externalversions/factory.go:117: Failed to list *v1alpha1.PodChurn: the server could not find the requested resource (get podchurns.churndrcontroller.churndr.com)
+
+
+E0218 15:25:54.158783    8381 reflector.go:153] github.com/llimon/churndr/pkg/generated/informers/externalversions/factory.go:117: Failed to list *v1alpha1.PodChurn: no kind "PodchurnList" is registered for version "churndrcontroller.churndr.com/v1alpha1" in scheme "github.com/llimon/churndr/pkg/generated/clientset/versioned/scheme/register.go:30"
+
