@@ -3,7 +3,28 @@ kind: Podchurn
 metadata:
   name: test-churn-01
 spec:
-  workflow: 
+  notify:
+    notificationFrequency: 120
+    noiseReductionLookBackTime: 15
+    emailTo: luislimon@gmail.com
+  podFilters:
+    - name: sandbox
+      matchRegEx: "sandbox.*"
+    - name: Nginx
+      matchRegEx: "nginx.*"
+  podLogs:
+    saveLogs: true
+    tailLines: 300
+    maxBytes: 4096
+    storeType: s3
+    bucket: argoscheduler-sample
+    region: us-east-1
+    awsKeys:
+      secret: example-aws-s3-secret
+      accessKeyID: accessKey
+      secretKeyID: secretKey
+  ignoreFinalTermination: true
+  workflow:
     sourceType: github
     scheme: https
     repo: https://github.com/llimon/workflowscheduler-examples.git
@@ -17,8 +38,8 @@ spec:
       accessKeyID: accessKey
       secretKeyID: secretKey
     path: transformed-file.dat
-    launchExt:  ready
-    finishExt:  done
+    launchExt: ready
+    finishExt: done
     processingExt: processing
     renameOnStart: true
     renameOnFinish: true

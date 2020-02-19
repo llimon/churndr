@@ -35,12 +35,17 @@ type Podchurn struct {
 
 // PodchurnSpec is the spec for a Podchurn resource
 type PodchurnSpec struct {
-	DeploymentName string      `json:"deploymentName"`
-	Replicas       *int32      `json:"replicas"`
-	CronSpec       string      `json:"cronSpec"`
-	FileWatcher    FileWatcher `json:"fileWatcher"`
-	Workflow       WorkFlow    `json:"workflow"`
-	Activity       Activity    `json:"activity"`
+	PodFilters             []*PodFilters `json:"podFilters"`
+	PodLogs                PodLogs       `json:"podLogs"`
+	IgnoreFinalTermination bool          `json:"ignoreFinalTermination"`
+	DeploymentName         string        `json:"deploymentName"`
+	Replicas               *int32        `json:"replicas"`
+}
+
+// PodFilters - Contains filtering used to select pods
+type PodFilters struct {
+	Name       string `json:"name"`
+	MatchRegEx string `json:"matchRegEx"`
 }
 
 // AWSKeys - Contains Struct for storing AWS AccessKey and SecretKey
@@ -51,6 +56,16 @@ type AWSKeys struct {
 	AccessKey   string `json:"-"`           // Decripted secret AccessKey
 	SecretKey   string `json:"-"`           // Decrypted secret SecretKey
 
+}
+
+// PodLogs - Contains information about how to handdle logs
+type PodLogs struct {
+	SaveLogs    bool    `json:"saveLogs`
+	TailLines   *int32  `json:"tailLines"`
+	MaxBytes    *int32  `json:"tailLines"`
+	StorageType string  `json:"storageType"`
+	bucket      string  `json:"bucket"`
+	AwsKeys     AWSKeys `json:"awsKeys"`
 }
 
 // FileWatcher - Defines File watchers used for launching Workflows
