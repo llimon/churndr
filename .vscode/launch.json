@@ -15,7 +15,7 @@
                 "KUBECONFIG": "/Users/llimon/.kube/admins@ifdp2-ppd-usw2.cluster.k8s.local"
             },
             "args": [
-                "--development",
+                //"--development",
                 "--port",
                 8081,
                 "--notification-frequency",

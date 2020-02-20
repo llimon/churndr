@@ -18,6 +18,7 @@ package controller
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -36,6 +37,7 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog"
 
+	"github.com/llimon/churndr/common"
 	churndrv1alpha1 "github.com/llimon/churndr/pkg/apis/churndrcontroller/v1alpha1"
 	clientset "github.com/llimon/churndr/pkg/generated/clientset/versioned"
 	churndrscheme "github.com/llimon/churndr/pkg/generated/clientset/versioned/scheme"
@@ -153,8 +155,6 @@ func NewController(
 	return controller
 }
 
-var podChurnList map[string]*churndrv1alpha1.Podchurn
-
 // Run will set up the event handlers for types we are interested in, as well
 // as syncing informer caches and starting workers. It will block until stopCh
 // is closed, at which point it will shutdown the workqueue and wait for
@@ -162,8 +162,6 @@ var podChurnList map[string]*churndrv1alpha1.Podchurn
 func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
 	defer c.workqueue.ShutDown()
-
-	podChurnList = make(map[string]*churndrv1alpha1.Podchurn)
 
 	// Start the informer factories to begin populating the informer caches
 	klog.Info("Starting PodChurn controller")
@@ -270,8 +268,14 @@ func (c *Controller) syncHandler(key string) error {
 
 	// Get the PodChurn resource with this namespace/name
 	podChurn, err := c.podChurnsLister.Podchurns(namespace).Get(name)
-	if _, found := podChurnList[name]; !found {
-		podChurnList[name] = podChurn
+	if _, found := common.PodChurnList[name]; !found {
+		common.PodChurnList[name] = podChurn
+	} else {
+		// Only update in-memory record when we find a update.
+		// BUG/FIX: We dont need a DeepEqual. comparing Genrations should be sufficient.
+		if !reflect.DeepEqual(podChurn, common.PodChurnList[name]) {
+			common.PodChurnList[name] = podChurn
+		}
 	}
 
 	if err != nil {
@@ -284,8 +288,8 @@ func (c *Controller) syncHandler(key string) error {
 
 		// Delete the resource from active list of scheduled jobs
 		// BUG/FIX: Remove from scheduler job list
-		if _, found := podChurnList[name]; !found {
-			delete(podChurnList, name)
+		if _, found := common.PodChurnList[name]; !found {
+			delete(common.PodChurnList, name)
 
 			// Remove from scheduled job list
 		}

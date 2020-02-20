@@ -24,23 +24,3 @@ spec:
       accessKeyID: accessKey
       secretKeyID: secretKey
   ignoreFinalTermination: true
-  workflow:
-    sourceType: github
-    scheme: https
-    repo: https://github.com/llimon/workflowscheduler-examples.git
-    path: "workflows/bye-world.yaml"
-  fileWatcher:
-    type: s3
-    bucket: argoscheduler-sample
-    region: us-east-1
-    AWSKeys:
-      secret: example-aws-s3-secret
-      accessKeyID: accessKey
-      secretKeyID: secretKey
-    path: transformed-file.dat
-    launchExt: ready
-    finishExt: done
-    processingExt: processing
-    renameOnStart: true
-    renameOnFinish: true
-    frequency: "@every 1m"
