@@ -4,18 +4,32 @@ metadata:
   name: test-churn-01
 spec:
   notify:
+    #
+    # Accumulate all pods issues matching this alert (in seconds)
     notificationFrequency: 120
+    #
+    # Suppress repeats of pod issues ocurring during this time period (minutes), 0 disables it
     noiseReductionLookBackTime: 15
     emailTo: luislimon@gmail.com
+  #
+  # all alerts from all namespaces matching this topic will be grouped into a single alert.
+  subscriptionTopic: fdp-preprod-banking
   podFilters:
     - name: sandbox
       matchRegEx: "sandbox.*"
+      type: regex
     - name: Nginx
       matchRegEx: "nginx.*"
+      type: regex
+    - name: app-label-match
+      label: my-application
+      type: label
   podLogs:
     saveLogs: true
     tailLines: 300
     maxBytes: 4096
+    #
+    # Optionaly logs of pod terminations can be stored in S3 for future analytics.
     storeType: s3
     bucket: argoscheduler-sample
     region: us-east-1
@@ -23,4 +37,6 @@ spec:
       secret: example-aws-s3-secret
       accessKeyID: accessKey
       secretKeyID: secretKey
+  #
+  # Don't report pods terminating because they are been deleted (scale-down or deployments)
   ignoreFinalTermination: true
