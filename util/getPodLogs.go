@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
-
+    "context"
 	"github.com/llimon/churndr/common"
 	"github.com/llimon/churndr/common/util"
 	corev1 "k8s.io/api/core/v1"
@@ -52,7 +52,7 @@ func GetPreviousPodLogs(pod *corev1.Pod, containerName string, tailLines int64, 
 		return "", err
 	}
 	req := clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &podLogOpts)
-	podLogs, err := req.Stream()
+	podLogs, err := req.Stream(context.Background())
 	if err != nil {
 		return "", err
 	}
