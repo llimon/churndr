@@ -152,7 +152,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 		// Only process Pod types we care about.
 		isValidKind := false
 		for _, o := range pod.OwnerReferences {
-			if o.Kind == "ReplicaSet" {
+			if o.Kind == "ReplicaSet" || o.Kind == "Job" {
 				isValidKind = true
 			}
 		}
