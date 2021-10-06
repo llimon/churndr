@@ -314,7 +314,7 @@ func (c *Controller) updatePodChurnStatus(podChurn *churndrv1alpha1.Podchurn, de
 	// which is ideal for ensuring nothing other than resource status has been updated.
 	//_, err := c.argoschedulerclientset.SamplecontrollerV1alpha1().PodChurns(podChurn.Namespace).Update(podChurnCopy)
 	//_, err := c.argoschedulerclientset.ChurndrV1alpha1().Podchurns(podChurn.Namespace).Update(podChurnCopy)
-	_, err := c.argoschedulerclientset.ChurndrcontrollerV1alpha1().Podchurns(podChurn.Namespace).Update(context.Brackground(), podChurnCopy, metav1.UpdateOptions{})
+	_, err := c.argoschedulerclientset.ChurndrcontrollerV1alpha1().Podchurns(podChurn.Namespace).Update(context.Background(), podChurnCopy, metav1.UpdateOptions{})
 	return err
 }
 
