@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"time"
 
+    "context"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -313,7 +314,7 @@ func (c *Controller) updatePodChurnStatus(podChurn *churndrv1alpha1.Podchurn, de
 	// which is ideal for ensuring nothing other than resource status has been updated.
 	//_, err := c.argoschedulerclientset.SamplecontrollerV1alpha1().PodChurns(podChurn.Namespace).Update(podChurnCopy)
 	//_, err := c.argoschedulerclientset.ChurndrV1alpha1().Podchurns(podChurn.Namespace).Update(podChurnCopy)
-	_, err := c.argoschedulerclientset.ChurndrcontrollerV1alpha1().Podchurns(podChurn.Namespace).Update(podChurnCopy)
+	_, err := c.argoschedulerclientset.ChurndrcontrollerV1alpha1().Podchurns(podChurn.Namespace).Update(context.Brackground(), podChurnCopy, metav1.UpdateOptions{})
 	return err
 }
 
