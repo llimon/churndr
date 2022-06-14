@@ -5,7 +5,7 @@
           --email-to "luislimon@gmail.com" \
           --email-subject "ChurnDR: Pod with issues in monitored namespaces" \
           --smtp "smtp.gmail.com"  \
-          --namespace dev-devx-datacollector-usw2-e2e \
+          --namespace default \
           --namespace dev-devx-datacollector-usw2-prd \
           start
           

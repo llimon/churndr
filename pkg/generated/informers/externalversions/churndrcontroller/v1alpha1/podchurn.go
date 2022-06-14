@@ -19,6 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	time "time"
 
 	churndrcontrollerv1alpha1 "github.com/llimon/churndr/pkg/apis/churndrcontroller/v1alpha1"
@@ -61,13 +62,13 @@ func NewFilteredPodchurnInformer(client versioned.Interface, namespace string, r
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ChurndrcontrollerV1alpha1().Podchurns(namespace).List(options)
+				return client.ChurndrcontrollerV1alpha1().Podchurns(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ChurndrcontrollerV1alpha1().Podchurns(namespace).Watch(options)
+				return client.ChurndrcontrollerV1alpha1().Podchurns(namespace).Watch(context.TODO(), options)
 			},
 		},
 		&churndrcontrollerv1alpha1.Podchurn{},

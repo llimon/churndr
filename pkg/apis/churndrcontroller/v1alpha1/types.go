@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-    "github.com/robfig/cron/v3"
+	"github.com/robfig/cron/v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -104,7 +104,7 @@ type WorkFlow struct {
 
 type Activity struct {
 	Status              string       `json:"status"`              // status = active, failed, running, launching
-	CronEntryID         cron.EntryID`json:"_,omitempty"`         // Schedule IS assigned by cron
+	CronEntryID         cron.EntryID `json:"_,omitempty"`         // Schedule IS assigned by cron
 	LastExecutedJobName string       `json:"lastExecutedJobName"` // Name of the last job create launched by ArgoWorkflows
 	FileWatcherEntryID  cron.EntryID `json:"_,omitempty"`         // Job used to running Filewatcher
 }

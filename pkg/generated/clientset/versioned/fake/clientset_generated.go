@@ -74,7 +74,10 @@ func (c *Clientset) Tracker() testing.ObjectTracker {
 	return c.tracker
 }
 
-var _ clientset.Interface = &Clientset{}
+var (
+	_ clientset.Interface = &Clientset{}
+	_ testing.FakeClient  = &Clientset{}
+)
 
 // ChurndrcontrollerV1alpha1 retrieves the ChurndrcontrollerV1alpha1Client
 func (c *Clientset) ChurndrcontrollerV1alpha1() churndrcontrollerv1alpha1.ChurndrcontrollerV1alpha1Interface {

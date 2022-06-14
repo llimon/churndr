@@ -146,6 +146,11 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 	// Cast the obj as pod
 	pod := obj.(*corev1.Pod)
 
+    pod2 := obj.(*corev1.Pod)
+
+    common.Sugar.Infof("pod %v pod1.Status.Phase: %v",  pod.Name, pod2.Status.Phase)
+    common.Sugar.Infof("pod %v pod2.Status.Phase: %v",  pod.Name, pod2.Status.Phase)
+
 	ok := podInMonitoredNamespace(pod)
 	if ok {
 
@@ -166,6 +171,7 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 		if pod.Status.Phase == "Pending" { //&& pod.Status.StartTime.Time {
 
 		}
+        common.Sugar.Infof("pod.Status.Phase: %v",  pod.Status.Phase)
 		var containerList []common.ContainerDB
 		for _, containerStatus := range pod.Status.ContainerStatuses {
 			// if containerStatus.State.Running != nil {
@@ -191,7 +197,9 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 			// 	}
 
 			//} else if containerStatus.State.Terminated != nil {
-			if containerStatus.State.Terminated != nil {
+
+            common.Sugar.Infof("containerStatus.State: %v",  containerStatus.State.Terminated)
+			if containerStatus.State.Terminated != nil  {
 				common.Sugar.Infow("OnUpdate",
 					"Namespace", pod.ObjectMeta.Namespace,
 					"POD", pod.ObjectMeta.Name,
@@ -217,9 +225,12 @@ func onUpdate(obj interface{}, obj2 interface{}) {
 				doSavePodStatus = true
 
 				// Save logs of terminated pod for posterity
+                // If they are restarting it will capture the previous execution
 				if containerStatus.RestartCount > 0 {
-					go util.PersistPodLogs(pod, containerStatus)
-				}
+				    go util.PersistPodLogs(pod, true, containerStatus)
+                } else {
+				    go util.PersistPodLogs(pod, false, containerStatus)
+			    }
 
 				// if _, found := common.PodCache[pod.ObjectMeta.Name]; found == false {
 				// 	fmt.Println("Marking pod deletion on our pod database cache")

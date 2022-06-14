@@ -8,8 +8,9 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func PersistPodLogs(pod *corev1.Pod, containerStatus corev1.ContainerStatus) { //containerName string, restartCount int32) {
-	log, err := GetPreviousPodLogs(pod, containerStatus.Name, 200, 4096)
+func PersistPodLogs(pod *corev1.Pod, previous bool, containerStatus corev1.ContainerStatus) { //containerName string, restartCount int32) {
+	common.Sugar.Infof("in:PersistPodLogs %v", pod.Name)
+	log, err := GetPodLogs(pod, containerStatus.Name, previous, 200, 4096)
 	if err != nil {
 		common.Sugar.Infow("Unable to get logs for pod container",
 			"pod", pod.Name,

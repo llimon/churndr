@@ -13,19 +13,22 @@ spec:
     emailTo: luislimon@gmail.com
   #
   # all alerts from all namespaces matching this topic will be grouped into a single alert.
-  subscriptionTopic: fdp-preprod-banking
+  subscriptionTopic: S360-data-collectors
   podFilters:
-    - name: sandbox
-      matchRegEx: "sandbox.*"
+    - name: cronjob
+      matchRegEx: "cronjob.*"
       type: regex
-    - name: Nginx
-      matchRegEx: "nginx.*"
+    - name: jobs
+      matchRegEx: "job.*"
+      type: regex
+    - name: examples
+      matchRegEx: "example.*"
       type: regex
     - name: app-label-match
       label: my-application
       type: label
   podLogs:
-    saveLogs: true
+    saveLogs: false
     tailLines: 300
     maxBytes: 4096
     #

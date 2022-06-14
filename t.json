@@ -1,0 +1,64 @@
+{
+	"aws": { // ie, not running under IKS
+		"minReplicas": 3,
+		"maxReplicas": 663,
+		"infraAsCode": true, // Do Instances have been created by a ASG created by CloudFormation or Terreform
+		"intuitAMIBase": "base_cg_java:3.0.3",
+		"baseImageAge": "19700101:01:01:01"
+		"isImageDueToExpire" : true,
+	},
+	"wavefront": {
+		"hasCPUMetrics": true,
+		"hasMemmoryMetrics": false,
+	},
+	"iksm": [
+		"cpf-use2-prd-iks2-": {
+			"environmentType": "prd",
+			"hasDeployedPod" : false, // IKSM.
+			"isUpAndRunning" : true, // Gateway info
+		},
+		"cpf-usw2-prd-iks2-": {
+			"environmentType": "prd",
+			"hasDeployedPods" : true,   // === Up and running ??
+			"cluster": "cg-tax-prod-usw2-k8s",
+			"cpuAllocatedAllPods": true, //Not sure how to get this
+			"memoryAllocatedAllPods" : true, //Not sure how to get this
+			"instanceGroup":[
+				"name": "cg-tax-prd-us2-k8s-ig",
+				"minReplicas": 3,
+				"maxReplicas": 663
+				"instanceType": "m5.2xlarge"
+			]
+		}
+
+	]
+}
+
+
+old:
+
+"iks": {
+	"cluster": "cg-tax-prod-usw2-k8s",
+	"cgConfigRepo": "tax-triage/consumer-tax-documents-iks-config",
+	"cgDeploymentRepo": "tax-triage/consumer-tax-documents-deployment",
+	"jacoco": "",
+	"mock": "",
+	"minReplicas": 3,
+	"maxReplicas": 663,
+	"pavedRoad": "CG IKS",
+	"deploy": [
+		"cpf-usw2-iks2: Up and running",
+		"cqa-usw2-iks2: Deployed but not running",
+		"dev-usw2-iks2: Up and running",
+		"e2e-usw2-iks2: Up and running",
+		"prd-use2-iks2: Up and running",
+		"prd-usw2-iks2: Up and running",
+		"prf-usw2-iks2: Up and running",
+		"qal-usw2-iks2: Up and running",
+		"stg-use2-iks2: Deployed but not running",
+		"stg-usw2-iks2: Deployed but not running"
+	],
+	"kustomizeBase": "10.0.1",
+	"imageBase": "base_cg_java:3.0.3",
+	"prodManifest": "service-container: CPU = not configured, Memory = 17Gi"
+},

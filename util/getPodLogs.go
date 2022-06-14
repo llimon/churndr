@@ -2,26 +2,27 @@ package util
 
 import (
 	"bytes"
-	"io"
-	"os"
-    "context"
+	"context"
 	"github.com/llimon/churndr/common"
 	"github.com/llimon/churndr/common/util"
+	"io"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"os"
 
 	"k8s.io/client-go/rest"
 )
 
-func GetPreviousPodLogs(pod *corev1.Pod, containerName string, tailLines int64, limitBytes int64) (string, error) {
+func GetPodLogs(pod *corev1.Pod, containerName string, previous bool, tailLines int64, limitBytes int64) (string, error) {
+    common.Sugar.Infof("in:GetPodLogs: %v", containerName)
 	var config *rest.Config
 	var err error
 
 	//tailLines := int64(200)
 	//limitBytes := int64(4096)
 	podLogOpts := corev1.PodLogOptions{
-		Previous:   true,
+		Previous:   previous,
 		Container:  containerName,
 		TailLines:  &tailLines,
 		LimitBytes: &limitBytes,
@@ -51,6 +52,8 @@ func GetPreviousPodLogs(pod *corev1.Pod, containerName string, tailLines int64, 
 	if err != nil {
 		return "", err
 	}
+
+    common.Sugar.Infof("running GetLogs function")
 	req := clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &podLogOpts)
 	podLogs, err := req.Stream(context.Background())
 	if err != nil {

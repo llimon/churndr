@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: example-pi-error
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: docker.intuit.com/docker-rmt/perl
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000); die('Please don't fail ...');"]
+      restartPolicy: Never
+  backoffLimit: 3

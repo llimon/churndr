@@ -19,6 +19,8 @@ limitations under the License.
 package fake
 
 import (
+	"context"
+
 	v1alpha1 "github.com/llimon/churndr/pkg/apis/churndrcontroller/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
@@ -39,7 +41,7 @@ var podchurnsResource = schema.GroupVersionResource{Group: "churndrcontroller.ch
 var podchurnsKind = schema.GroupVersionKind{Group: "churndrcontroller.churndr.com", Version: "v1alpha1", Kind: "Podchurn"}
 
 // Get takes name of the podchurn, and returns the corresponding podchurn object, and an error if there is any.
-func (c *FakePodchurns) Get(name string, options v1.GetOptions) (result *v1alpha1.Podchurn, err error) {
+func (c *FakePodchurns) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Podchurn, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(podchurnsResource, c.ns, name), &v1alpha1.Podchurn{})
 
@@ -50,7 +52,7 @@ func (c *FakePodchurns) Get(name string, options v1.GetOptions) (result *v1alpha
 }
 
 // List takes label and field selectors, and returns the list of Podchurns that match those selectors.
-func (c *FakePodchurns) List(opts v1.ListOptions) (result *v1alpha1.PodchurnList, err error) {
+func (c *FakePodchurns) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.PodchurnList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(podchurnsResource, podchurnsKind, c.ns, opts), &v1alpha1.PodchurnList{})
 
@@ -72,14 +74,14 @@ func (c *FakePodchurns) List(opts v1.ListOptions) (result *v1alpha1.PodchurnList
 }
 
 // Watch returns a watch.Interface that watches the requested podchurns.
-func (c *FakePodchurns) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakePodchurns) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(podchurnsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a podchurn and creates it.  Returns the server's representation of the podchurn, and an error, if there is any.
-func (c *FakePodchurns) Create(podchurn *v1alpha1.Podchurn) (result *v1alpha1.Podchurn, err error) {
+func (c *FakePodchurns) Create(ctx context.Context, podchurn *v1alpha1.Podchurn, opts v1.CreateOptions) (result *v1alpha1.Podchurn, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(podchurnsResource, c.ns, podchurn), &v1alpha1.Podchurn{})
 
@@ -90,7 +92,7 @@ func (c *FakePodchurns) Create(podchurn *v1alpha1.Podchurn) (result *v1alpha1.Po
 }
 
 // Update takes the representation of a podchurn and updates it. Returns the server's representation of the podchurn, and an error, if there is any.
-func (c *FakePodchurns) Update(podchurn *v1alpha1.Podchurn) (result *v1alpha1.Podchurn, err error) {
+func (c *FakePodchurns) Update(ctx context.Context, podchurn *v1alpha1.Podchurn, opts v1.UpdateOptions) (result *v1alpha1.Podchurn, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(podchurnsResource, c.ns, podchurn), &v1alpha1.Podchurn{})
 
@@ -102,7 +104,7 @@ func (c *FakePodchurns) Update(podchurn *v1alpha1.Podchurn) (result *v1alpha1.Po
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakePodchurns) UpdateStatus(podchurn *v1alpha1.Podchurn) (*v1alpha1.Podchurn, error) {
+func (c *FakePodchurns) UpdateStatus(ctx context.Context, podchurn *v1alpha1.Podchurn, opts v1.UpdateOptions) (*v1alpha1.Podchurn, error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateSubresourceAction(podchurnsResource, "status", c.ns, podchurn), &v1alpha1.Podchurn{})
 
@@ -113,7 +115,7 @@ func (c *FakePodchurns) UpdateStatus(podchurn *v1alpha1.Podchurn) (*v1alpha1.Pod
 }
 
 // Delete takes name of the podchurn and deletes it. Returns an error if one occurs.
-func (c *FakePodchurns) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakePodchurns) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(podchurnsResource, c.ns, name), &v1alpha1.Podchurn{})
 
@@ -121,15 +123,15 @@ func (c *FakePodchurns) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakePodchurns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(podchurnsResource, c.ns, listOptions)
+func (c *FakePodchurns) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(podchurnsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PodchurnList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched podchurn.
-func (c *FakePodchurns) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Podchurn, err error) {
+func (c *FakePodchurns) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Podchurn, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(podchurnsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Podchurn{})
 

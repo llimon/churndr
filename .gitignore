@@ -7,5 +7,5 @@ server.key
 stuff
 .*swp
 .password
-churndr
+churndr*
 page-on-pod-restarts

@@ -26,8 +26,10 @@ import (
 )
 
 // PodchurnLister helps list Podchurns.
+// All objects returned here must be treated as read-only.
 type PodchurnLister interface {
 	// List lists all Podchurns in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.Podchurn, err error)
 	// Podchurns returns an object that can list and get Podchurns.
 	Podchurns(namespace string) PodchurnNamespaceLister
@@ -58,10 +60,13 @@ func (s *podchurnLister) Podchurns(namespace string) PodchurnNamespaceLister {
 }
 
 // PodchurnNamespaceLister helps list and get Podchurns.
+// All objects returned here must be treated as read-only.
 type PodchurnNamespaceLister interface {
 	// List lists all Podchurns in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.Podchurn, err error)
 	// Get retrieves the Podchurn from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.Podchurn, error)
 	PodchurnNamespaceListerExpansion
 }

@@ -1,0 +1,9 @@
+##
+## Build from docker image
+docker run -ti golang:1.13 bash
+
+## inside docker: 
+git clone https://github.com/llimon/churndrcontroller.git
+cd churndrcontroller/
+go mod vendor
+go build -mod=vendor . 
